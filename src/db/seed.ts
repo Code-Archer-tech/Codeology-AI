@@ -1,0 +1,732 @@
+import { db } from './index.ts';
+import {
+  users,
+  candidateProfiles,
+  candidateExperiences,
+  candidateEducations,
+  jobs,
+  applications,
+  applicationStatusHistory,
+  savedJobs,
+  interviews,
+  notifications,
+  leads,
+  leadNotes,
+  auditLogs,
+  servicesCms,
+  industriesCms,
+  caseStudiesCms,
+  blogsCms,
+  systemSettings,
+  externalIntegrations,
+} from './schema.ts';
+import { eq } from 'drizzle-orm';
+
+export async function seedDatabaseIfEmpty() {
+  try {
+    const existingUsers = await db.select().from(users).limit(1);
+    if (existingUsers.length > 0) {
+      console.log('Database already initialized with data.');
+      return;
+    }
+
+    console.log('Seeding initial production data into Cloud SQL PostgreSQL...');
+
+    // 1. Users
+    const defaultDevHash = '$2b$10$oZWzaeOkYq5yXAEqiy1fTOC7IdNxedCODddC3hnBwky/NDsNwLl26'; // Codeology2026!#Secure
+
+    await db.insert(users).values([
+      {
+        id: 'usr_candidate_1',
+        uid: 'usr_candidate_1',
+        email: 'candidate@codeologyai.com',
+        passwordHash: defaultDevHash,
+        name: 'Elena Rostova',
+        role: 'candidate',
+        status: 'ACTIVE',
+        title: 'Senior Cloud Infrastructure Engineer',
+        phone: '+1 (415) 890-4122',
+        avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+      },
+      {
+        id: 'usr_candidate_2',
+        uid: 'usr_candidate_2',
+        email: 'alex.chen@example.com',
+        passwordHash: defaultDevHash,
+        name: 'Alex Chen',
+        role: 'candidate',
+        status: 'ACTIVE',
+        title: 'Staff Security Engineer',
+        phone: '+1 (206) 555-0182',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      },
+      {
+        id: 'usr_recruiter_1',
+        uid: 'usr_recruiter_1',
+        email: 'recruiter@codeologyai.com',
+        passwordHash: defaultDevHash,
+        name: 'Marcus Vance',
+        role: 'recruiter',
+        status: 'ACTIVE',
+        title: 'Principal Technical Recruiter',
+        department: 'Technical Recruitment',
+        phone: '+1 (415) 890-4100',
+        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+      },
+      {
+        id: 'usr_hr_1',
+        uid: 'usr_hr_1',
+        email: 'hr@codeologyai.com',
+        passwordHash: defaultDevHash,
+        name: 'Sarah Jenkins',
+        role: 'hr_manager',
+        status: 'ACTIVE',
+        title: 'VP of People & Talent',
+        department: 'Human Resources',
+        phone: '+1 (415) 890-4105',
+        avatarUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150',
+      },
+      {
+        id: 'usr_admin_1',
+        uid: 'usr_admin_1',
+        email: 'admin@codeologyai.com',
+        passwordHash: '$2b$10$oZWzaeOkYq5yXAEqiy1fTOC7IdNxedCODddC3hnBwky/NDsNwLl26',
+        name: 'David Sterling',
+        role: 'super_admin',
+        status: 'ACTIVE',
+        title: 'Chief Technology Officer',
+        department: 'Executive Leadership',
+        phone: '+1 (415) 890-4001',
+        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
+      },
+      {
+        id: 'usr_admin_sec',
+        uid: 'usr_admin_sec',
+        email: 'compliance.admin@codeologyai.com',
+        passwordHash: '$2b$10$oZWzaeOkYq5yXAEqiy1fTOC7IdNxedCODddC3hnBwky/NDsNwLl26',
+        name: 'Rachel Adams',
+        role: 'admin',
+        status: 'ACTIVE',
+        title: 'Director of InfoSec & Compliance',
+        department: 'Security & Compliance',
+        phone: '+1 (415) 890-4050',
+        avatarUrl: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150',
+      },
+      {
+        id: 'usr_hiring_mgr',
+        uid: 'usr_hiring_mgr',
+        email: 'hiring.manager@codeologyai.com',
+        passwordHash: '$2b$10$oZWzaeOkYq5yXAEqiy1fTOC7IdNxedCODddC3hnBwky/NDsNwLl26',
+        name: 'Sanjay Patel',
+        role: 'hiring_manager',
+        status: 'ACTIVE',
+        title: 'VP of Distributed Infrastructure',
+        department: 'Engineering',
+        phone: '+1 (415) 890-4060',
+        avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150',
+      },
+    ]);
+
+    // 2. Candidate Profiles
+    await db.insert(candidateProfiles).values([
+      {
+        id: 'prof_elena_1',
+        userId: 'usr_candidate_1',
+        headline: 'Senior Cloud Architect & SRE | AWS Certified Solutions Architect Professional | K8s & Terraform',
+        summary: 'Cloud Infrastructure and DevOps engineer with 8+ years building zero-downtime distributed systems across AWS and hybrid on-prem datacenters. Passionate about automated IaC, GitOps, and platform observability.',
+        location: 'San Francisco, CA (Open to Remote / Hybrid)',
+        phone: '+1 (415) 890-4122',
+        linkedinUrl: 'https://linkedin.com/in/elena-rostova-cloud',
+        githubUrl: 'https://github.com/erostova-infra',
+        portfolioUrl: 'https://rostova.dev',
+        yearsOfExperience: 8,
+        highestEducation: 'Master of Science in Computer Engineering',
+        expectedSalary: '$185,000 - $210,000',
+        noticePeriod: '2 Weeks',
+        availabilityStatus: 'Actively Looking',
+        resumeFileName: 'Elena_Rostova_Cloud_Architect_Resume.pdf',
+        resumeText: 'Elena Rostova - Cloud Infrastructure Architect. 8+ years experience in multi-cloud architecture, AWS ECS/EKS, Terraform Enterprise, ArgoCD GitOps, Prometheus & Datadog observability, SOC 2 compliance. Led infrastructure modernization for high-throughput FinTech payment APIs.',
+        skills: JSON.stringify(['AWS', 'Kubernetes', 'Terraform', 'Docker', 'Go', 'Python', 'CI/CD Pipelines', 'Prometheus', 'Zero Trust Architecture']),
+        completenessScore: 92,
+      },
+    ]);
+
+    // 3. Experiences & Educations
+    await db.insert(candidateExperiences).values([
+      {
+        id: 'exp_1',
+        profileId: 'prof_elena_1',
+        company: 'Aether Cloud Systems',
+        title: 'Senior Site Reliability Engineer',
+        location: 'San Francisco, CA',
+        startDate: '2022-03',
+        isCurrent: true,
+        description: 'Architected multi-region Kubernetes clusters handling 45,000 requests/sec. Reduced compute spend by 28% through Karpenter dynamic auto-scaling and spot instance optimization.',
+      },
+      {
+        id: 'exp_2',
+        profileId: 'prof_elena_1',
+        company: 'FinVanguard Technologies',
+        title: 'Cloud DevOps Engineer',
+        location: 'San Jose, CA',
+        startDate: '2019-06',
+        endDate: '2022-02',
+        isCurrent: false,
+        description: 'Migrated 40+ legacy on-premises microservices to AWS EKS with zero customer-facing downtime. Standardized Terraform IaC modules company-wide.',
+      },
+    ]);
+
+    await db.insert(candidateEducations).values([
+      {
+        id: 'edu_1',
+        profileId: 'prof_elena_1',
+        institution: 'University of California, Berkeley',
+        degree: 'Master of Science',
+        fieldOfStudy: 'Computer Engineering',
+        startYear: '2017',
+        endYear: '2019',
+        gpa: '3.91',
+      },
+      {
+        id: 'edu_2',
+        profileId: 'prof_elena_1',
+        institution: 'San Jose State University',
+        degree: 'Bachelor of Science',
+        fieldOfStudy: 'Software Engineering',
+        startYear: '2013',
+        endYear: '2017',
+        gpa: '3.85',
+      },
+    ]);
+
+    // 4. Jobs
+    await db.insert(jobs).values([
+      {
+        id: 'job_cloud_arch_01',
+        slug: 'lead-cloud-infrastructure-architect',
+        title: 'Lead Cloud Infrastructure Architect',
+        department: 'Cloud Infrastructure',
+        location: 'San Francisco, CA / Remote (US)',
+        type: 'Full-time',
+        experienceLevel: 'Lead / Architect',
+        salaryMin: 190000,
+        salaryMax: 235000,
+        currency: 'USD',
+        summary: 'Lead the architecture and delivery of mission-critical multi-cloud infrastructure environments for Fortune 500 enterprise clients.',
+        description: 'Codeology AI is seeking a seasoned Lead Cloud Infrastructure Architect to spearhead complex enterprise cloud migrations, multi-region Kubernetes orchestration, and immutable infrastructure automation.',
+        responsibilities: JSON.stringify([
+          'Design and deploy resilient, high-availability AWS and hybrid cloud architectures adhering to Well-Architected Framework guidelines.',
+          'Author enterprise-grade Terraform modules and GitOps delivery pipelines using ArgoCD.',
+          'Partner with client VP of Infrastructure and CISO teams to guarantee strict SOC 2, HIPAA, and ISO 27001 regulatory compliance.',
+          'Mentor mid-level DevOps engineers and establish engineering quality standards for client engagements.',
+        ]),
+        requirements: JSON.stringify([
+          '8+ years of hands-on infrastructure engineering with at least 4 years in a technical leadership or architect capacity.',
+          'AWS Certified Solutions Architect Professional or equivalent industry recognition.',
+          'Deep mastery of Kubernetes cluster management, container networking (Calico/Cilium), and service mesh (Istio).',
+          'Proven track record architecting zero-downtime database migrations (PostgreSQL, Aurora, CockroachDB).',
+        ]),
+        benefits: JSON.stringify([
+          'Comprehensive premium health, dental, and vision insurance with 100% company-paid premiums.',
+          '401(k) retirement plan with immediate 5% company match.',
+          'Generous home office stipend and state-of-the-art Apple M3 Max hardware allowance.',
+          '$4,000 annual continuing education and cloud certification reimbursement budget.',
+        ]),
+        skills: JSON.stringify(['AWS', 'Kubernetes', 'Terraform', 'GitOps', 'Zero Trust', 'Golang', 'Linux Internals']),
+        status: 'published',
+        recruiterId: 'usr_recruiter_1',
+        recruiterName: 'Marcus Vance',
+        hiringManagerName: 'David Sterling (CTO)',
+        viewsCount: 384,
+        applicantsCount: 19,
+      },
+      {
+        id: 'job_sec_ops_02',
+        slug: 'principal-cybersecurity-soc-engineer',
+        title: 'Principal Cybersecurity & SOC Operations Engineer',
+        department: 'Cybersecurity',
+        location: 'New York, NY / Hybrid',
+        type: 'Full-time',
+        experienceLevel: 'Senior',
+        salaryMin: 180000,
+        salaryMax: 220000,
+        currency: 'USD',
+        summary: 'Drive 24/7 proactive threat hunting, incident response, and Zero Trust security posture across distributed enterprise environments.',
+        description: 'As a Principal Cybersecurity Engineer at Codeology AI, you will guide managed security operations, deploy advanced SIEM/SOAR platforms, and defend critical client infrastructure against emerging threat vectors.',
+        responsibilities: JSON.stringify([
+          'Architect and operationalize next-generation SIEM/XDR platforms (Sentinel, CrowdStrike Falcon, Splunk).',
+          'Lead high-severity incident triage, root cause forensic analysis, and containment protocols.',
+          'Automate security remediation workflows via Python and SOAR playbooks.',
+          'Conduct architectural threat modeling and recurring penetration testing exercises.',
+        ]),
+        requirements: JSON.stringify([
+          '6+ years in corporate cybersecurity, incident response, or defensive SOC environments.',
+          'Hold industry credentials such as CISSP, CISM, or GIAC (GCIA, GCIH).',
+          'Extensive knowledge of MITRE ATT&CK framework, network packet analysis, and endpoint forensics.',
+          'Demonstrated experience hardening public cloud IAM, VPC peering, and KMS infrastructure.',
+        ]),
+        benefits: JSON.stringify([
+          'Full medical coverage including mental health and wellness subsidies.',
+          'Flexible hybrid work policy (2 days office, 3 days remote).',
+          'Performance-based annual executive bonus pool.',
+          'Sponsored attendance at Black Hat, DEF CON, and RSA conferences.',
+        ]),
+        skills: JSON.stringify(['Cybersecurity', 'Zero Trust', 'CrowdStrike', 'SIEM', 'Incident Response', 'Python', 'SOC 2']),
+        status: 'published',
+        recruiterId: 'usr_recruiter_1',
+        recruiterName: 'Marcus Vance',
+        hiringManagerName: 'Arthur Bradley (Director of InfoSec)',
+        viewsCount: 295,
+        applicantsCount: 12,
+      },
+      {
+        id: 'job_fullstack_03',
+        slug: 'staff-software-engineer-enterprise-platforms',
+        title: 'Staff Software Engineer – Enterprise Platforms',
+        department: 'Software Engineering',
+        location: 'Austin, TX / Remote (US & Canada)',
+        type: 'Full-time',
+        experienceLevel: 'Senior',
+        salaryMin: 175000,
+        salaryMax: 215000,
+        currency: 'USD',
+        summary: 'Build resilient distributed systems, enterprise APIs, and high-throughput microservices for modern enterprise workflows.',
+        description: 'Join our Software Engineering Practice to build custom transactional software, real-time analytics pipelines, and secure API gateways for premier commercial clients.',
+        responsibilities: JSON.stringify([
+          'Design, build, and maintain mission-critical backend services in Node.js/TypeScript and Go.',
+          'Develop responsive, accessible design system interfaces using React and modern CSS architectures.',
+          'Implement resilient distributed event streaming with Apache Kafka and RabbitMQ.',
+          'Champion automated testing, high test coverage, and strict code review standards.',
+        ]),
+        requirements: JSON.stringify([
+          '7+ years developing web applications and distributed architectures.',
+          'Deep fluency in TypeScript, React, Node.js, and SQL (PostgreSQL schema design & optimization).',
+          'Familiarity with event-driven architectures, caching strategies (Redis), and message queues.',
+          'Commitment to writing readable, maintainable, and thoroughly tested software.',
+        ]),
+        benefits: JSON.stringify([
+          'Remote-first culture with asynchronous communication philosophy.',
+          'Unlimited Paid Time Off with mandatory minimum 3-week annual leave.',
+          'Annual technology home refresh budget.',
+        ]),
+        skills: JSON.stringify(['TypeScript', 'React', 'Node.js', 'PostgreSQL', 'Kafka', 'Redis', 'GraphQL']),
+        status: 'published',
+        recruiterId: 'usr_recruiter_1',
+        recruiterName: 'Marcus Vance',
+        hiringManagerName: 'Elena Vane (Head of Engineering)',
+        viewsCount: 420,
+        applicantsCount: 28,
+      },
+      {
+        id: 'job_recruiter_04',
+        slug: 'senior-technical-recruiter-global-talent',
+        title: 'Senior Technical Recruiter – Global Talent Delivery',
+        department: 'Technical Recruitment',
+        location: 'Chicago, IL / Remote',
+        type: 'Full-time',
+        experienceLevel: 'Mid-Senior',
+        salaryMin: 120000,
+        salaryMax: 155000,
+        currency: 'USD',
+        summary: 'Partner with enterprise hiring managers to source, assess, and place elite technical talent across infrastructure, security, and engineering.',
+        description: 'Codeology AI’s Global Recruitment Practice provides high-touch RPO and technical staffing for high-growth tech companies and enterprise digital transformation programs.',
+        responsibilities: JSON.stringify([
+          'Manage full-lifecycle recruitment across diverse engineering disciplines from sourcing to closing.',
+          'Build and maintain proactive talent pipelines for niche skill sets (DevOps, SRE, Cybersecurity).',
+          'Facilitate structured interview feedback sessions with hiring managers to eliminate hiring bias.',
+          'Deliver exceptional, transparent candidate experiences throughout the recruitment journey.',
+        ]),
+        requirements: JSON.stringify([
+          '4+ years technical recruiting experience in agency or fast-paced corporate environments.',
+          'Proven capability to assess software engineering, cloud, and cybersecurity profiles accurately.',
+          'Strong knowledge of modern ATS workflows, sourcing tools, and compensation benchmarking.',
+        ]),
+        benefits: JSON.stringify([
+          'Competitive base salary plus performance incentive commission structure.',
+          'Comprehensive health insurance and 401(k) matching.',
+          'Flexible schedule and remote work capability.',
+        ]),
+        skills: JSON.stringify(['Technical Sourcing', 'Candidate Assessment', 'RPO Operations', 'Pipeline Management', 'Offer Negotiation']),
+        status: 'published',
+        recruiterId: 'usr_recruiter_1',
+        recruiterName: 'Marcus Vance',
+        hiringManagerName: 'Sarah Jenkins (VP of People)',
+        viewsCount: 210,
+        applicantsCount: 14,
+      },
+      {
+        id: 'job_devops_05',
+        slug: 'devops-continuous-delivery-specialist',
+        title: 'DevOps & Continuous Delivery Specialist',
+        department: 'Cloud Infrastructure',
+        location: 'Seattle, WA / Remote',
+        type: 'Full-time',
+        experienceLevel: 'Mid-Senior',
+        salaryMin: 145000,
+        salaryMax: 180000,
+        currency: 'USD',
+        summary: 'Standardize enterprise deployment pipelines, optimize build times, and accelerate engineering velocity.',
+        description: 'Collaborate directly with cross-functional engineering teams to build automated test/build/deploy pipelines, container image scanning, and release governance.',
+        responsibilities: JSON.stringify([
+          'Maintain and improve GitHub Actions and GitLab CI enterprise runners.',
+          'Automate container vulnerability scanning and SBOM generation.',
+          'Implement automated canary releases and rollback strategies with Flagger and Linkerd.',
+        ]),
+        requirements: JSON.stringify([
+          '4+ years configuring CI/CD pipelines, Docker images, and Linux systems.',
+          'Hands-on experience with Helm, Terraform, and shell scripting.',
+        ]),
+        benefits: JSON.stringify(['Health, dental, vision', '401k match', 'Annual learning stipend']),
+        skills: JSON.stringify(['Docker', 'Kubernetes', 'GitHub Actions', 'Terraform', 'Bash', 'Prometheus']),
+        status: 'published',
+        recruiterId: 'usr_recruiter_1',
+        recruiterName: 'Marcus Vance',
+        hiringManagerName: 'David Sterling',
+        viewsCount: 175,
+        applicantsCount: 9,
+      },
+    ]);
+
+    // 5. Applications & History
+    await db.insert(applications).values([
+      {
+        id: 'app_001',
+        jobId: 'job_cloud_arch_01',
+        candidateId: 'usr_candidate_1',
+        candidateName: 'Elena Rostova',
+        candidateEmail: 'candidate@codeologyai.com',
+        candidatePhone: '+1 (415) 890-4122',
+        candidateLocation: 'San Francisco, CA',
+        status: 'Interview',
+        coverNote: 'I have spent the past 8 years architecting resilient AWS infrastructure and leading GitOps modernization. Codeology AI’s focus on enterprise reliability directly aligns with my production experience.',
+        resumeFileName: 'Elena_Rostova_Cloud_Architect_Resume.pdf',
+        aiMatchScore: 94,
+        aiMatchRationale: 'Exceptional architectural alignment. Elena possesses 8+ years of production experience in multi-cloud and Kubernetes. Matches 100% of required skills (AWS, K8s, Terraform, GitOps) with demonstrated cost-optimization results.',
+        aiKeyStrengths: JSON.stringify([
+          'Deep hands-on AWS EKS and Kubernetes orchestration at 45k req/sec scale',
+          'Proven Karpenter & spot instance cost optimization (28% spend reduction)',
+          'Demonstrated leadership in zero-downtime microservice migrations',
+        ]),
+        aiIdentifiedGaps: JSON.stringify([
+          'No direct mention of Istio service mesh in recent role, though Calico networking is verified.',
+        ]),
+        recruiterNotes: JSON.stringify([
+          'Strong communicator. Articulated trade-offs between Karpenter vs Cluster Autoscaler cleanly.',
+          'High salary alignment. Target is $195k base which fits our $190k-$235k band comfortably.',
+        ]),
+      },
+      {
+        id: 'app_002',
+        jobId: 'job_sec_ops_02',
+        candidateId: 'usr_candidate_2',
+        candidateName: 'Alex Chen',
+        candidateEmail: 'alex.chen@example.com',
+        candidatePhone: '+1 (206) 555-0182',
+        candidateLocation: 'Seattle, WA',
+        status: 'Under Review',
+        coverNote: '6+ years in high-intensity SOC environments defending healthcare and banking telemetry.',
+        aiMatchScore: 88,
+        aiMatchRationale: 'Strong candidate with CISSP and Splunk/CrowdStrike certifications. Extensive incident response history.',
+        aiKeyStrengths: JSON.stringify(['CISSP certified', 'Deep forensic packet inspection', 'Python automation']),
+        aiIdentifiedGaps: JSON.stringify(['Prefers remote, requisition has hybrid requirement.']),
+        recruiterNotes: JSON.stringify(['Candidate requested remote consideration.']),
+      },
+    ]);
+
+    await db.insert(applicationStatusHistory).values([
+      {
+        id: 'hist_1',
+        applicationId: 'app_001',
+        fromStatus: null,
+        toStatus: 'Applied',
+        changedBy: 'Candidate (Self-Applied)',
+        reason: 'Application submitted through career portal',
+      },
+      {
+        id: 'hist_2',
+        applicationId: 'app_001',
+        fromStatus: 'Applied',
+        toStatus: 'Under Review',
+        changedBy: 'Marcus Vance (Recruiter)',
+        reason: 'Initial profile review confirmed strong AWS background',
+      },
+      {
+        id: 'hist_3',
+        applicationId: 'app_001',
+        fromStatus: 'Under Review',
+        toStatus: 'Shortlisted',
+        changedBy: 'Marcus Vance (Recruiter)',
+        reason: 'Passed recruiter phone screen. AI match score 94%.',
+      },
+      {
+        id: 'hist_4',
+        applicationId: 'app_001',
+        fromStatus: 'Shortlisted',
+        toStatus: 'Interview',
+        changedBy: 'David Sterling (Hiring Manager)',
+        reason: 'Invited to Technical Architecture deep dive',
+      },
+      {
+        id: 'hist_201',
+        applicationId: 'app_002',
+        fromStatus: null,
+        toStatus: 'Applied',
+        changedBy: 'Candidate (Self-Applied)',
+        reason: 'Application submitted',
+      },
+      {
+        id: 'hist_202',
+        applicationId: 'app_002',
+        fromStatus: 'Applied',
+        toStatus: 'Under Review',
+        changedBy: 'Marcus Vance (Recruiter)',
+        reason: 'Screening credentials',
+      },
+    ]);
+
+    // 6. Saved Jobs
+    await db.insert(savedJobs).values([
+      {
+        id: 'saved_1',
+        userId: 'usr_candidate_1',
+        jobId: 'job_fullstack_03',
+      },
+    ]);
+
+    // 7. Interviews
+    await db.insert(interviews).values([
+      {
+        id: 'int_001',
+        applicationId: 'app_001',
+        jobId: 'job_cloud_arch_01',
+        candidateId: 'usr_candidate_1',
+        candidateName: 'Elena Rostova',
+        candidateEmail: 'candidate@codeologyai.com',
+        interviewerName: 'David Sterling (CTO)',
+        interviewerEmail: 'admin@codeologyai.com',
+        scheduledAt: new Date(Date.now() + 86400000 * 3), // 3 days from now
+        durationMinutes: 60,
+        mode: 'Video',
+        meetingLink: 'https://meet.google.com/ais-codeology-arch',
+        notes: 'Focus on multi-region failover design, disaster recovery RTO/RPO limits, and Terraform module governance.',
+        status: 'scheduled',
+      },
+    ]);
+
+    // 8. Notifications
+    await db.insert(notifications).values([
+      {
+        id: 'notif_1',
+        userId: 'usr_candidate_1',
+        title: 'Interview Scheduled',
+        message: 'Your Technical Architecture interview with David Sterling (CTO) has been confirmed.',
+        type: 'interview',
+        link: '/candidate/interviews',
+        read: false,
+      },
+      {
+        id: 'notif_2',
+        userId: 'usr_candidate_1',
+        title: 'Application Status Updated',
+        message: 'Your application for Lead Cloud Infrastructure Architect has advanced to "Interview".',
+        type: 'success',
+        link: '/candidate/applications',
+        read: true,
+      },
+      {
+        id: 'notif_3',
+        userId: 'usr_recruiter_1',
+        title: 'New Candidate Application',
+        message: 'Alex Chen applied for Principal Cybersecurity & SOC Operations Engineer.',
+        type: 'info',
+        link: '/recruiter/pipeline',
+        read: false,
+      },
+    ]);
+
+    // 9. CRM Leads
+    await db.insert(leads).values([
+      {
+        id: 'lead_001',
+        fullName: 'Robert Harrington',
+        email: 'r.harrington@veritascapital.io',
+        phone: '+1 (212) 880-9921',
+        company: 'Veritas Financial Capital',
+        companySize: '250 - 500 Employees',
+        serviceInterest: 'Cloud Migration & Hybrid Infrastructure',
+        budgetRange: '$100k - $250k',
+        message: 'We are preparing to migrate our trade execution data store off legacy on-prem hardware into AWS. Looking for a validated partner to assess security architecture and build Terraform automation.',
+        stage: 'Qualified',
+        assignedToName: 'David Sterling',
+        followUpDate: '2026-03-22',
+      },
+      {
+        id: 'lead_002',
+        fullName: 'Dr. Katherine Price',
+        email: 'katherine.price@novapharma.org',
+        phone: '+1 (617) 420-1188',
+        company: 'NovaPharma Research',
+        companySize: '500+ Employees',
+        serviceInterest: 'Cybersecurity & Zero Trust Architecture',
+        budgetRange: '$250k+',
+        message: 'Seeking comprehensive penetration testing and SOC 2 Type II audit readiness across clinical trial data platforms.',
+        stage: 'Proposal',
+        assignedToName: 'Arthur Bradley',
+        followUpDate: '2026-03-25',
+      },
+      {
+        id: 'lead_003',
+        fullName: 'Julian Vance',
+        email: 'jvance@omnilogix.net',
+        phone: '+1 (312) 670-3344',
+        company: 'OmniLogix Global Freight',
+        companySize: '1,000+ Employees',
+        serviceInterest: 'Technical Recruitment & Contract Pods',
+        budgetRange: '$150k - $300k',
+        message: 'Need 6 senior DevOps and Kubernetes engineers on an urgent 12-month contract basis to support our fleet telemetry rollout.',
+        stage: 'Negotiation',
+        assignedToName: 'Sarah Jenkins',
+        followUpDate: '2026-03-18',
+      },
+    ]);
+
+    await db.insert(leadNotes).values([
+      {
+        id: 'note_1',
+        leadId: 'lead_001',
+        authorName: 'Marcus Vance',
+        content: 'Initial intake call conducted. Confirmed budget approved by CFO. They require SOC 2 compliance documentation.',
+      },
+      {
+        id: 'note_2',
+        leadId: 'lead_002',
+        authorName: 'Arthur Bradley',
+        content: 'Delivered customized SOC 2 audit readiness statement of work. Decision scheduled for end of month.',
+      },
+      {
+        id: 'note_3',
+        leadId: 'lead_003',
+        authorName: 'Sarah Jenkins',
+        content: 'Master Services Agreement (MSA) currently with client legal team. Candidate pod profiles pre-screened.',
+      },
+    ]);
+
+    // 10. Audit Logs
+    await db.insert(auditLogs).values([
+      {
+        id: 'log_001',
+        userId: 'usr_admin_1',
+        userEmail: 'admin@codeologyai.com',
+        userName: 'David Sterling',
+        action: 'JOB_PUBLISHED',
+        entityType: 'Job',
+        entityId: 'job_cloud_arch_01',
+        details: 'Published Lead Cloud Infrastructure Architect requisition to career portal',
+        ipAddress: '192.168.1.1',
+      },
+      {
+        id: 'log_002',
+        userId: 'usr_recruiter_1',
+        userEmail: 'recruiter@codeologyai.com',
+        userName: 'Marcus Vance',
+        action: 'APPLICATION_STATUS_CHANGE',
+        entityType: 'Application',
+        entityId: 'app_001',
+        details: 'Changed status from Shortlisted to Interview for Elena Rostova',
+        ipAddress: '192.168.1.45',
+      },
+      {
+        id: 'log_003',
+        userId: 'usr_recruiter_1',
+        userEmail: 'recruiter@codeologyai.com',
+        userName: 'Marcus Vance',
+        action: 'INTERVIEW_SCHEDULED',
+        entityType: 'Interview',
+        entityId: 'int_001',
+        details: 'Scheduled Technical Architecture interview with David Sterling',
+        ipAddress: '192.168.1.45',
+      },
+    ]);
+
+    // 11. External Integrations Configuration
+    await db.insert(externalIntegrations).values([
+      {
+        id: 'int_cloudsql',
+        name: 'Google Cloud SQL (PostgreSQL)',
+        type: 'database',
+        status: 'CONFIGURED',
+        isEnabled: true,
+        lastTestedAt: new Date(),
+        details: 'Active PostgreSQL developer edition instance running in asia-southeast1 via local Auth Proxy unix socket.',
+      },
+      {
+        id: 'int_firebase_oauth',
+        name: 'Google OAuth / Firebase Authentication',
+        type: 'oauth',
+        status: 'CONFIGURED',
+        isEnabled: true,
+        lastTestedAt: new Date(),
+        details: 'Configured with client ID in firebase-applet-config.json. Multi-role RBAC enforced server-side.',
+      },
+      {
+        id: 'int_email',
+        name: 'Enterprise SMTP / Transactional Email',
+        type: 'email',
+        status: 'CONFIGURED',
+        isEnabled: true,
+        lastTestedAt: new Date(),
+        details: 'Transactional email service abstraction with automated delivery for status updates, notifications, and lead confirmations.',
+      },
+      {
+        id: 'int_gemini_ai',
+        name: 'Google Gemini 2.5 AI Engine',
+        type: 'ai',
+        status: 'CONFIGURED',
+        isEnabled: true,
+        lastTestedAt: new Date(),
+        details: 'Server-side resume analysis, job candidate matching, and candidate strength/gap evaluations.',
+      },
+      {
+        id: 'int_storage',
+        name: 'Enterprise Document & Resume Storage',
+        type: 'storage',
+        status: 'CONFIGURED',
+        isEnabled: true,
+        lastTestedAt: new Date(),
+        details: 'Local secure multi-tenant filesystem storage with SHA-256 metadata verification.',
+      },
+    ]);
+
+    // 12. System Settings
+    await db.insert(systemSettings).values([
+      {
+        id: 'set_company_name',
+        key: 'COMPANY_NAME',
+        value: 'Codeology AI Enterprise',
+        description: 'Official corporate entity name across platforms and documents',
+      },
+      {
+        id: 'set_maintenance_mode',
+        key: 'MAINTENANCE_MODE',
+        value: 'false',
+        description: 'Global maintenance flag for scheduled maintenance windows',
+      },
+      {
+        id: 'set_candidate_self_apply',
+        key: 'ALLOW_CANDIDATE_REGISTRATION',
+        value: 'true',
+        description: 'Allow candidates to register and submit self-applications directly',
+      },
+      {
+        id: 'set_ai_screening',
+        key: 'ENABLE_AI_SCREENING',
+        value: 'true',
+        description: 'Run automated AI match score and rationale extraction upon application',
+      },
+    ]);
+
+    console.log('Production database seeding completed successfully.');
+  } catch (error) {
+    console.error('Failed to seed database:', error);
+  }
+}

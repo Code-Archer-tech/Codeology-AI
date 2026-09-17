@@ -1,0 +1,6 @@
+{
+  "name": "Codeology AI Enterprise & Talent Platform",
+  "description": "Enterprise IT infrastructure, cloud engineering, cybersecurity, and global recruitment platform powered by Codeology AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
